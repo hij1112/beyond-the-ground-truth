@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -334,86 +334,11 @@
         </div>
         <div class="columns is-centered">
           <div class="column is-8">
-            <div class="image-comparison-container">
-              <!-- <div class="image-comparison">
-                <div class="image-container noisy">
-                  <img
-                    class="comparison-image"
-                    src="./static/images/NIND_droid_ISO6400_8bit_LQ.jpg"
-                    alt="Noisy Image 1"
-                  />
-                  <div class="overlay-text">Noisy Image</div>
-                </div>
-                <div class="image-container clean">
-                  <img
-                    class="comparison-image"
-                    src="./static/images/NIND_droid_ISO6400_8bit_32.394_ours_Output.jpg"
-                    alt="Clean Image 1"
-                  />
-                  <div class="overlay-text">Our Denoised</div>
-                </div>
-                <div class="slider-handle"></div>
-              </div> -->
-
-              <div class="image-comparison">
-                <div class="image-container noisy">
-                  <img
-                    class="comparison-image"
-                    src="./static/images/NIND_MVB-Urania_ISOH1_8bit_LQ.jpg"
-                    alt="Noisy Image 2"
-                  />
-                  <div class="overlay-text">Noisy Image</div>
-                </div>
-                <div class="image-container clean">
-                  <img
-                    class="comparison-image"
-                    src="./static/images/NIND_MVB-Urania_ISOH1_8bit_27.822_ours_Output.jpg"
-                    alt="Clean Image 2"
-                  />
-                  <div class="overlay-text">Our Denoised</div>
-                </div>
-                <div class="slider-handle"></div>
-              </div>
-
-              <div class="image-comparison">
-                <div class="image-container noisy">
-                  <img
-                    class="comparison-image"
-                    src="./static/images/NIND_LaptopInLibrary_ISOH2_16bit_LQ.jpg"
-                    alt="Noisy Image 3"
-                  />
-                  <div class="overlay-text">Noisy Image</div>
-                </div>
-                <div class="image-container clean">
-                  <img
-                    class="comparison-image"
-                    src="./static/images/NIND_LaptopInLibrary_ISOH2_16bit_31.482_ours_Output.jpg"
-                    alt="Clean Image 3"
-                  />
-                  <div class="overlay-text">Our Denoised</div>
-                </div>
-                <div class="slider-handle"></div>
-              </div>
-
-              <div class="image-comparison">
-                <div class="image-container noisy">
-                  <img
-                    class="comparison-image"
-                    src="./static/images/NIND_Ottignies_ISO6400_8bit_LQ.jpg"
-                    alt="Noisy Image 5"
-                  />
-                  <div class="overlay-text">Noisy Image</div>
-                </div>
-                <div class="image-container clean">
-                  <img
-                    class="comparison-image"
-                    src="./static/images/NIND_Ottignies_ISO6400_8bit_37.440_ours_Output.jpg"
-                    alt="Clean Image 5"
-                  />
-                  <div class="overlay-text">Our Denoised</div>
-                </div>
-                <div class="slider-handle"></div>
-              </div>
+            <div class="figure-container">
+              <img
+                src="./static/images/overview.pdf"
+                alt="Supervision Enhancement / Output Refinement"
+              />
             </div>
           </div>
         </div>
@@ -495,43 +420,5 @@
         </div>
       </div>
     </footer>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const containers = document.querySelectorAll(".image-comparison");
-
-        containers.forEach((container) => {
-          const sliderHandle = container.querySelector(".slider-handle");
-          const cleanContainer = container.querySelector(".clean");
-
-          function updateSliderPosition(x) {
-            const containerRect = container.getBoundingClientRect();
-            let position = (x - containerRect.left) / containerRect.width;
-            position = Math.max(0, Math.min(1, position));
-
-            // Adjust slider handle position
-            sliderHandle.style.left = `${position * 100}%`;
-
-            // Clip only the clean container
-            cleanContainer.style.clipPath = `inset(0 0 0 ${position * 100}%)`;
-          }
-
-          function handleMove(e) {
-            const clientX =
-              e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
-            updateSliderPosition(clientX);
-          }
-
-          // Initialize slider in the middle
-          const containerRect = container.getBoundingClientRect();
-          const initialX = containerRect.left + containerRect.width / 2;
-          updateSliderPosition(initialX);
-
-          // Add event listeners for mouse and touch movement
-          container.addEventListener("mousemove", handleMove);
-          container.addEventListener("touchmove", handleMove);
-        });
-      });
-    </script>
   </body>
 </html>
