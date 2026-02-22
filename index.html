@@ -275,8 +275,8 @@
 
         <div class="hero-body has-text-centered">
           <h2 class="subtitle">
-            <strong>TL;DR:</strong> We simplify the removal of complex
-            real-world noise by translating it into Gaussian noise.
+            <strong>TL;DR:</strong> We enhance the supervision of image
+            restoration target with high fidelity.
           </h2>
         </div>
       </div>
@@ -289,24 +289,28 @@
             <h2 class="title is-3">Abstract</h2>
             <div class="content has-text-justified">
               <p>
-                Deep learning-based Image denoising techniques often struggle
-                with poor generalization performance to out-of-distribution
-                real-world noise. To tackle this challenge, we propose a novel
-                noise translation framework that performs denoising on an image
-                with translated noise rather than directly denoising an original
-                noisy image. Specifically, our approach translates complex,
-                unknown real-world noise into Gaussian noise, which is spatially
-                uncorrelated and independent of image content, through a noise
-                translation network. The translated noisy images are then
-                processed by an image denoising network pretrained to
-                effectively remove Gaussian noise, enabling robust and
-                consistent denoising performance. We also design well-motivated
-                loss functions and architectures for the noise translation
-                network by leveraging the mathematical properties of Gaussian
-                noise. Experimental results demonstrate that the proposed method
-                substantially improves robustness and generalizability,
-                outperforming state-of-the-art methods across diverse
-                benchmarks.
+                Deep learning-based image restoration has achieved significant
+                success. However, when addressing real-world degradations, model
+                performance is limited by the quality of ground-truth images in
+                datasets due to practical constraints in data acquisition. To
+                address this limitation, we propose a novel framework that
+                enhances existing ground truth images to provide higher-quality
+                supervision for real-world restoration. Our framework generates
+                perceptually enhanced ground truth images using super-resolution
+                by incorporating adaptive frequency masks, which are learned by
+                a conditional frequency mask generator. These masks guide the
+                optimal fusion of frequency components from the original ground
+                truth and its super-resolved variants, yielding enhanced ground
+                truth images. This frequency-domain mixup preserves the semantic
+                consistency of the original content while selectively enriching
+                perceptual details, preventing hallucinated artifacts that could
+                compromise fidelity. The enhanced ground truth images are used
+                to train a lightweight output refinement network that can be
+                seamlessly integrated with existing restoration models.
+                Extensive experiments demonstrate that our approach consistently
+                improves the quality of restored images. We further validate the
+                effectiveness of both supervision enhancement and output
+                refinement through user studies.
               </p>
             </div>
           </div>
