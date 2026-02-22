@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Beyond the Ground Truth: Enhanced Supervision for Image Restoration"
+    />
+    <meta
+      name="keywords"
+      content="Image Restoration,, Deep Learning"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learning to Translate Noise for Robust Image Denoising</title>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-PYVRSFMDRL");
+    </script>
+    <style>
+      .interpolation-image {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        max-width: 900px;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+      }
+      .image-comparison-container {
+        display: flex;
+        width: 100%;
+        max-width: 900px;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+        padding-bottom: 20px;
+        margin: 0 auto;
+      }
+
+      .figure-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 900px; /* Match this with .image-comparison-container */
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+      }
+
+      .figure-container img {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+      }
+
+      @media screen and (max-width: 768px) {
+        .image-comparison-container,
+        .figure-container {
+          max-width: 100%;
+        }
+      }
+
+      .slider-handle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 4px;
+        background: white;
+        cursor: col-resize;
+        z-index: 2;
+        transition: left 0s ease;
+      }
+      .slider-handle::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+      }
+      .image-comparison {
+        position: relative;
+        width: 100%;
+        max-width: 900px;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        overflow: hidden;
+        cursor: pointer;
+      }
+
+      .image-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      .comparison-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .clean {
+        clip-path: inset(0 0 0 50%);
+        transition: clip-path 0s ease;
+      }
+
+      .overlay-text {
+        position: absolute;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px black;
+        padding: 5px 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        border-radius: 5px;
+      }
+
+      .noisy .overlay-text {
+        top: 10px;
+        left: 10px;
+      }
+
+      .clean .overlay-text {
+        top: 10px;
+        right: 10px;
+      }
+
+      .slider-handle {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 4px;
+        background: white;
+        cursor: col-resize;
+        z-index: 2;
+      }
+    </style>
+    <link
+      href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./static/css/bulma.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-carousel.min.css" />
+    <link rel="stylesheet" href="./static/css/bulma-slider.min.css" />
+    <link rel="stylesheet" href="./static/css/fontawesome.all.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css"
+    />
+    <link rel="stylesheet" href="./static/css/index.css" />
+    <link rel="icon" href="./static/images/favicon_snu.svg" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="./static/js/fontawesome.all.min.js"></script>
+    <script src="./static/js/bulma-carousel.min.js"></script>
+    <script src="./static/js/bulma-slider.min.js"></script>
+    <script src="./static/js/index.js"></script>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column has-text-centered">
+              <h1 class="title is-1 publication-title">
+                Learning to Translate Noise for Robust Image Denoising
+              </h1>
+              <!-- <div class="is-size-4 publication-authors">
+                <span class="author-block">Under Review</span>
+              </div> -->
+              <div class="is-size-5 publication-authors">
+                <span class="author-block"
+                  ><a href="https://hij1112.github.io">Inju Ha</a
+                  ><sup>*1</sup>,</span
+                >
+                <span class="author-block"
+                  ><a href="https://doinghun.com">Donghun Ryou</a
+                  ><sup>*2</sup>,</span
+                >
+                <span class="author-block"
+                  ><a href="https://seoseong.uk">Seonguk Seo</a
+                  ><sup>1</sup>,</span
+                >
+                <span class="author-block"
+                  ><a href="https://cv.snu.ac.kr/index.php/~bhhan/"
+                    >Bohyung Han</a
+                  ><sup>1, 2</sup>,</span
+                >
+              </div>
+              <div class="is-size-5 publication-authors">
+                <span class="author-block"
+                  >Computer Vision Laboratory, <sup>1</sup>ECE &
+                  <sup>2</sup>IPAI, Seoul National University</span
+                >
+              </div>
+              <div class="is-size-6 publication-authors">
+                <span class="author-block">* Indicates Equal Contribution</span>
+              </div>
+              <div class="column has-text-centered">
+                <div class="publication-links">
+                  <span class="link-block">
+                    <a
+                      href="https://arxiv.org/pdf/2412.04727"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fas fa-file-pdf"></i>
+                      </span>
+                      <span>Paper</span>
+                    </a>
+                  </span>
+                  <span class="link-block">
+                    <a
+                      href="https://arxiv.org/abs/2412.04727"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="ai ai-arxiv"></i>
+                      </span>
+                      <span>arXiv</span>
+                    </a>
+                  </span>
+                  <span class="link-block">
+                    <a
+                      href="https://github.com/dhryougit/learning-to-translate-noise"
+                      class="external-link button is-normal is-rounded is-dark"
+                    >
+                      <span class="icon">
+                        <i class="fab fa-github"></i>
+                      </span>
+                      <span>Code</span>
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero teaser">
+      <div class="container is-max-desktop">
+          <img
+            src="./static/images/framework.png"
+            class="interpolation-image"
+            alt="Framework diagram"
+          />
+          <h2 class="subtitle"></h2>
+          <div class="hero-body has-text-centered">
+          <h2 class="subtitle">
+            <strong>TL;DR:</strong> We simplify the removal of complex
+            real-world noise by translating it into Gaussian noise.
+          </h2>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <div class="column is-four-fifths">
+            <h2 class="title is-3">Abstract</h2>
+            <div class="content has-text-justified">
+              <p>
+                Deep learning-based Image denoising techniques often struggle
+                with poor generalization performance to out-of-distribution
+                real-world noise. To tackle this challenge, we propose a novel
+                noise translation framework that performs denoising on an image
+                with translated noise rather than directly denoising an original
+                noisy image. Specifically, our approach translates complex,
+                unknown real-world noise into Gaussian noise, which is spatially
+                uncorrelated and independent of image content, through a noise
+                translation network. The translated noisy images are then
+                processed by an image denoising network pretrained to
+                effectively remove Gaussian noise, enabling robust and
+                consistent denoising performance. We also design well-motivated
+                loss functions and architectures for the noise translation
+                network by leveraging the mathematical properties of Gaussian
+                noise. Experimental results demonstrate that the proposed method
+                substantially improves robustness and generalizability,
+                outperforming state-of-the-art methods across diverse
+                benchmarks.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- <section class="section">
+      <div class="columns is-centered has-text-centered">
+        <h2 class="title is-3">Out-of-distribution Results</h2>
+      </div>
+    </section> -->
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered has-text-centered">
+          <h2 class="title is-3">NIND (Natural Image Noise Dataset)</h2>
+        </div>
+        <div class="columns is-centered has-text-centered">
+          <h2 class="title is-4">~4K Resolution, no ground truth</h2>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <div class="image-comparison-container">
+              <!-- <div class="image-comparison">
+                <div class="image-container noisy">
+                  <img
+                    class="comparison-image"
+                    src="./static/images/NIND_droid_ISO6400_8bit_LQ.jpg"
+                    alt="Noisy Image 1"
+                  />
+                  <div class="overlay-text">Noisy Image</div>
+                </div>
+                <div class="image-container clean">
+                  <img
+                    class="comparison-image"
+                    src="./static/images/NIND_droid_ISO6400_8bit_32.394_ours_Output.jpg"
+                    alt="Clean Image 1"
+                  />
+                  <div class="overlay-text">Our Denoised</div>
+                </div>
+                <div class="slider-handle"></div>
+              </div> -->
+
+              <div class="image-comparison">
+                <div class="image-container noisy">
+                  <img
+                    class="comparison-image"
+                    src="./static/images/NIND_MVB-Urania_ISOH1_8bit_LQ.jpg"
+                    alt="Noisy Image 2"
+                  />
+                  <div class="overlay-text">Noisy Image</div>
+                </div>
+                <div class="image-container clean">
+                  <img
+                    class="comparison-image"
+                    src="./static/images/NIND_MVB-Urania_ISOH1_8bit_27.822_ours_Output.jpg"
+                    alt="Clean Image 2"
+                  />
+                  <div class="overlay-text">Our Denoised</div>
+                </div>
+                <div class="slider-handle"></div>
+              </div>
+
+              <div class="image-comparison">
+                <div class="image-container noisy">
+                  <img
+                    class="comparison-image"
+                    src="./static/images/NIND_LaptopInLibrary_ISOH2_16bit_LQ.jpg"
+                    alt="Noisy Image 3"
+                  />
+                  <div class="overlay-text">Noisy Image</div>
+                </div>
+                <div class="image-container clean">
+                  <img
+                    class="comparison-image"
+                    src="./static/images/NIND_LaptopInLibrary_ISOH2_16bit_31.482_ours_Output.jpg"
+                    alt="Clean Image 3"
+                  />
+                  <div class="overlay-text">Our Denoised</div>
+                </div>
+                <div class="slider-handle"></div>
+              </div>
+
+              <div class="image-comparison">
+                <div class="image-container noisy">
+                  <img
+                    class="comparison-image"
+                    src="./static/images/NIND_Ottignies_ISO6400_8bit_LQ.jpg"
+                    alt="Noisy Image 5"
+                  />
+                  <div class="overlay-text">Noisy Image</div>
+                </div>
+                <div class="image-container clean">
+                  <img
+                    class="comparison-image"
+                    src="./static/images/NIND_Ottignies_ISO6400_8bit_37.440_ours_Output.jpg"
+                    alt="Clean Image 5"
+                  />
+                  <div class="overlay-text">Our Denoised</div>
+                </div>
+                <div class="slider-handle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="columns is-centered has-text-centered">
+        <h2 class="title is-3">Comparisons with other denoising methods</h2>
+      </div>
+      <div class="columns is-centered has-text-centered">
+        <h2 class="title is-4">
+          out-of-distribution benchmarks, PSNR against ground truth
+        </h2>
+      </div>
+      <div class="figure-container">
+        <img src="./static/images/qual.png" />
+      </div>
+    </section>
+    <!-- <section class="section" id="BibTeX">
+      <div class="container is-max-desktop content">
+        <h2 class="title">BibTeX</h2>
+        <pre><code>@article{park2021nerfies,
+    author = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
+    title = {Nerfies: Deformable Neural Radiance Fields},
+    journal = {ICCV},
+    year = {2021},
+}</code></pre>
+      </div>
+    </section> -->
+    <section class="section" id="BibTeX">
+      <div class="container is-max-desktop content">
+        <h2 class="title">BibTeX</h2>
+        <pre><code>@article{ha2024learning,
+    author = {Ha, Inju and Ryou, Donghun and Seo, Seonguk and Han, Bohyung},
+    title = {Learning to Translate Noise for Robust Image Denoising},
+    archivePrefix = {arXiv},
+    eprint = {2412.04727},
+    year = {2024},
+    url = {https://arxiv.org/abs/2412.04727}
+}</code></pre>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="content has-text-centered">
+          <a class="icon-link" href="./static/videos/nerfies_paper.pdf">
+            <i class="fas fa-file-pdf"></i>
+          </a>
+          <a class="icon-link external-link" href="https://github.com/keunhong">
+            <i class="fab fa-github"></i>
+          </a>
+        </div>
+        <div class="columns is-centered">
+          <div class="column is-8">
+            <div class="content">
+              <p>
+                This website is licensed under a
+                <a
+                  rel="license"
+                  href="http://creativecommons.org/licenses/by-sa/4.0/"
+                  >Creative Commons Attribution-ShareAlike 4.0 International
+                  License</a
+                >.
+              </p>
+              <p>
+                This means you are free to borrow the
+                <a href="https://github.com/nerfies/nerfies.github.io"
+                  >source code</a
+                >
+                of this website, we just ask that you link back to this page in
+                the footer. Please remember to remove the analytics code
+                included in the header of the website which you do not want on
+                your website.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const containers = document.querySelectorAll(".image-comparison");
+
+        containers.forEach((container) => {
+          const sliderHandle = container.querySelector(".slider-handle");
+          const cleanContainer = container.querySelector(".clean");
+
+          function updateSliderPosition(x) {
+            const containerRect = container.getBoundingClientRect();
+            let position = (x - containerRect.left) / containerRect.width;
+            position = Math.max(0, Math.min(1, position));
+
+            // Adjust slider handle position
+            sliderHandle.style.left = `${position * 100}%`;
+
+            // Clip only the clean container
+            cleanContainer.style.clipPath = `inset(0 0 0 ${position * 100}%)`;
+          }
+
+          function handleMove(e) {
+            const clientX =
+              e.type === "touchmove" ? e.touches[0].clientX : e.clientX;
+            updateSliderPosition(clientX);
+          }
+
+          // Initialize slider in the middle
+          const containerRect = container.getBoundingClientRect();
+          const initialX = containerRect.left + containerRect.width / 2;
+          updateSliderPosition(initialX);
+
+          // Add event listeners for mouse and touch movement
+          container.addEventListener("mousemove", handleMove);
+          container.addEventListener("touchmove", handleMove);
+        });
+      });
+    </script>
+  </body>
+</html>
