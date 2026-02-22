@@ -81,11 +81,15 @@
       .image-stack img.on-top {
         z-index: 2;
       }
+      .figure-container.has-image-stack {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+      }
       .image-stack-buttons {
         display: flex;
         justify-content: center;
         gap: 12px;
-        margin-top: 1rem;
+        margin-top: 0.5rem;
         flex-wrap: wrap;
       }
       .image-stack-buttons button {
@@ -391,9 +395,11 @@
         </h2>
       </div>
       <div class="columns is-centered has-text-centered">
-        <h2 class="title is-4">GT image from GoPro Deblurring Dataset</h2>
+        <h2 class="title is-4">
+          Tested with GT image from GoPro Deblurring Dataset
+        </h2>
       </div>
-      <div class="figure-container">
+      <div class="figure-container has-image-stack">
         <div class="image-stack" id="comparison-stack">
           <img
             src="./static/images/original_gt.png"
